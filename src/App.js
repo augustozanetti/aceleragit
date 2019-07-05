@@ -1,9 +1,14 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import GlobalStyle from './styles/global';
+import Search from './components/Search'
 
 function App() {
   return (
-    <GlobalStyle />
+    <Fragment>
+      <GlobalStyle />  
+      <Search />
+    </Fragment>
+    
   );
 }
 
