@@ -16,7 +16,7 @@ export default class Search extends Component {
     
     handleSubmit(e){
         e.preventDefault();
-
+        console.log("state", this.state);
         fetch(`https://api.github.com/users/${this.state.user}/repos`)
             .then(response => response.json())
             .then(data => {
@@ -30,8 +30,12 @@ export default class Search extends Component {
             .catch(error => console.log(error));
     }
 
-    handleChange(e){
-        this.setState({user: e.target.value});
+    handleChange(event){
+        const {name, value} = event.target;
+
+        this.setState({
+            [name]: value
+        });
     }
     
     render() {
@@ -41,7 +45,7 @@ export default class Search extends Component {
             <Fragment>
                 <form onSubmit={this.handleSubmit}>
                     <div>
-                        <input value={user} onChange={this.handleChange}/>
+                        <input name="user" value={user} onChange={this.handleChange}/>
                         <button type="submit">Buscar</button>
                     </div>
                 </form>
