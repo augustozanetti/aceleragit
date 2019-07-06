@@ -11,22 +11,23 @@ export default class Search extends Component {
         };
 
         this.handleChange = this.handleChange.bind(this);
-        this.handleClick = this.handleClick.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
     
-    handleClick(){
+    handleSubmit(e){
+        e.preventDefault();
+
         fetch(`https://api.github.com/users/${this.state.user}/repos`)
-        .then(response => response.json())
-        .then((data) => {
-            const repositories = data.map(item => ({
-                id: item.id, 
-                name: item.name
-                })
-            );
-            
-            this.setState({ repositories })
-        })
-        .catch(error => console.log(error));
+            .then(response => response.json())
+            .then(data => {
+                const repositories = data.map(item => ({
+                    id: item.id, 
+                    name: item.name
+                    })
+                );            
+                this.setState({ repositories });
+            })
+            .catch(error => console.log(error));
     }
 
     handleChange(e){
@@ -34,13 +35,17 @@ export default class Search extends Component {
     }
     
     render() {
+        const { user, repositories } = this.state;
+         
         return (
             <Fragment>
-                <div>
-                    <input value={this.state.user} onChange={this.handleChange}/>
-                    <button onClick={this.handleClick}>Buscar</button>
-                </div>
-                <RepositoryList data={this.state.repositories} />
+                <form onSubmit={this.handleSubmit}>
+                    <div>
+                        <input value={user} onChange={this.handleChange}/>
+                        <button type="submit">Buscar</button>
+                    </div>
+                </form>
+                <RepositoryList data={repositories} />
             </Fragment>
         )
     }
