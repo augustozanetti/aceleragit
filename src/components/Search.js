@@ -1,12 +1,16 @@
 import React, { Component, Fragment } from 'react';
-import RepositoryList from './RepositoryList'
+import RepositoryList from './RepositoryList';
+import InputSearch from './InputSearch';
 
 export default class Search extends Component {
     constructor(props) {
         super(props)
     
         this.state = {
-            user: "",
+            user: '',
+            repository: '',
+            language: '',
+            searchType: 'user',
             repositories: []
         };
 
@@ -16,18 +20,35 @@ export default class Search extends Component {
     
     handleSubmit(e){
         e.preventDefault();
-        console.log("state", this.state);
-        fetch(`https://api.github.com/users/${this.state.user}/repos`)
+
+        const {user, repository, language} = this.state
+        let api = `https://api.github.com/users/${user}/repos`;
+
+        if(this.state.searchType === 'repo'){
+            let textLanguage = language ? `+language:${language}` : '';
+
+            api = `https://api.github.com/search/repositories?q=${repository}${textLanguage}` 
+        }
+
+        fetch(api)
             .then(response => response.json())
             .then(data => {
-                const repositories = data.map(item => ({
-                    id: item.id, 
-                    name: item.name
-                    })
-                );            
+                let repositories = [];
+                let setRepositories = items => repositories = items.map(item => ({ id: item.id, name: item.name }));
+                
+                if(data.message){
+                    alert('pesquisa inválida');
+                    return;
+                }
+
+                if(data.items) {
+                    setRepositories(data.items);       
+                } else {
+                    setRepositories(data);
+                }
+
                 this.setState({ repositories });
-            })
-            .catch(error => console.log(error));
+            });
     }
 
     handleChange(event){
@@ -39,13 +60,17 @@ export default class Search extends Component {
     }
     
     render() {
-        const { user, repositories } = this.state;
+        const { user, repository, language, searchType, repositories } = this.state;
          
         return (
             <Fragment>
                 <form onSubmit={this.handleSubmit}>
                     <div>
-                        <input name="user" value={user} onChange={this.handleChange}/>
+                        <InputSearch name="user" value={user} change={this.handleChange}/>
+                        <InputSearch name="repository" value={repository} change={this.handleChange}/>
+                        <InputSearch name="language" value={language} change={this.handleChange}/>
+                        <input type="radio" name="searchType" value="user" checked={searchType === 'user'} onChange={this.handleChange} /> User
+                        <input type="radio" name="searchType" value="repo" checked={searchType === 'repo'} onChange={this.handleChange}/> Repository/Language
                         <button type="submit">Buscar</button>
                     </div>
                 </form>
