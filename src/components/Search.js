@@ -36,16 +36,12 @@ export default class Search extends Component {
                 let repositories = [];
                 let setRepositories = items => repositories = items.map(item => ({ id: item.id, name: item.name }));
                 
-                if(data.message){
+                if(data.message || (this.state.searchType == 'repo' && !data.items)){
                     alert('pesquisa inválida');
                     return;
                 }
 
-                if(data.items) {
-                    setRepositories(data.items);       
-                } else {
-                    setRepositories(data);
-                }
+                setRepositories(data.items || data);
 
                 this.setState({ repositories });
             });
