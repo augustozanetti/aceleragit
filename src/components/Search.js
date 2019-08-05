@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import RepositoryList from './RepositoryList';
 import InputSearch from './InputSearch';
+import RepositoryPerYear from './RepositoryPerYear'
 
 export default class Search extends Component {
     constructor(props) {
@@ -34,9 +35,9 @@ export default class Search extends Component {
             .then(response => response.json())
             .then(data => {
                 let repositories = [];
-                let setRepositories = items => repositories = items.map(item => ({ id: item.id, name: item.name }));
+                let setRepositories = items => repositories = items.map(item => ({ id: item.id, name: item.name, created_at: item.created_at }));
                 
-                if(data.message || (this.state.searchType == 'repo' && !data.items)){
+                if(data.message || (this.state.searchType ==='repo' && !data.items)){
                     alert('pesquisa inválida');
                     return;
                 }
@@ -71,6 +72,7 @@ export default class Search extends Component {
                     </div>
                 </form>
                 <RepositoryList data={repositories} />
+                <RepositoryPerYear data={repositories} />
             </Fragment>
         )
     }
